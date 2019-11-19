@@ -1,5 +1,6 @@
 package com.mvn.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -20,26 +21,41 @@ import com.mvn.vo.UserInfoVO;
  */
 @WebServlet(name = "UserInfoController", urlPatterns = {"/user/*"})
 public class UserInfoController extends HttpServlet {
-	private String charSet = "utf-8";
 	private static final long serialVersionUID = 1L;
 	private UserInfoService uis = new UserInfoServiceImpl();
 	private Gson gson = new Gson();
 	
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String cmd = request.getParameter("cmd");
-		if ("uiList".equals(cmd)) {
-		List<UserInfoVO> uiList = uis.getUserList(null);
-		response.getWriter().print(gson.toJson(uiList));
-		HttpServletRequest req = (HttpServletRequest)request;
-		req.setCharacterEncoding(this.charSet);
-		HttpServletResponse res = (HttpServletResponse)response;
-		res.setContentType("application/json;charset=" + this.charSet);
+		String cmd = request.getRequestURI().substring(6);
+		String json = "";
+		if ("list".equals(cmd)) {
+			json = gson.toJson(uis.getUserList(null));
+		}else if("view".equals(cmd)) {
+			int uiNum = Integer.parseInt(request.getParameter("uiNum"));
+			UserInfoVO user = new UserInfoVO();
+			user.setUiNum(uiNum);
+			json = gson.toJson(uis.getUser(user));
 		}
+		response.getWriter().print(json);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		doGet(request, response);
+		BufferedReader br = request.getReader();
+		String str = null;
+		String json = "";
+		while((str=br.readLine())!=null) {
+			json += str;
+		}
+		UserInfoVO user = gson.fromJson(json, UserInfoVO.class);
+		String cmd = request.getRequestURI().substring(6);
+		if("insert".equals(cmd)) {
+			json = gson.toJson(uis.insertUser(user));
+		} else if("update".equals(cmd)) {
+			json = gson.toJson(uis.updateUser(user));
+		} else if("delete".equals(cmd)) {
+			json = gson.toJson(uis.deleteUser(user));
+		}
+		response.getWriter().print(json);
 	}
 
 }

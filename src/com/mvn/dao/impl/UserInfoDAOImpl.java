@@ -27,11 +27,62 @@ public class UserInfoDAOImpl implements UserInfoDAO {
 		}
 		return null;
 	}
+	
+	public UserInfoVO selectUser(UserInfoVO user) {
+		SqlSession ss = InitServlet.getSqlSession();
+		try {
+			return ss.selectOne("UserInfo.selectUser", user);
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			ss.close();
+		}
+		return null;
+	}
 
-	public static void main(String[] args) {
-		UserInfoDAO udao = new UserInfoDAOImpl();
-		Map<String, String> pUser = new HashMap<>();
-		System.out.println(udao.selectUserList(pUser));
+	@Override
+	public int insertUser(UserInfoVO user) {
+		SqlSession ss = InitServlet.getSqlSession();
+		try {
+			int cnt =  ss.insert("UserInfo.insertUser", user);
+			ss.commit();
+			return cnt;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			ss.close();
+		}
+		return 0;
+	}
+
+	@Override
+	public int updateUser(UserInfoVO user) {
+		SqlSession ss =  InitServlet.getSqlSession();
+		try {
+			int cnt = ss.update("UserInfo.updateUser",user);
+			ss.commit();
+			return cnt;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			ss.close();
+		}
+		return 0;
+	}
+
+	@Override
+	public int deleteUser(UserInfoVO user) {
+		SqlSession ss =  InitServlet.getSqlSession();
+		try {
+			int cnt = ss.delete("UserInfo.deleteUser",user);
+			ss.commit();
+			return cnt;
+		}catch(Exception e) {
+			e.printStackTrace();
+		}finally {
+			ss.close();
+		}
+		return 0;
 	}
 
 }

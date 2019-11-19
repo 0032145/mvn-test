@@ -7,6 +7,6 @@
 <title>Insert title here</title>
 </head>
 <body>
-<a href="/views/user/userlist">유저리스트 가기</a>
+<a href="/views/user/userList">유저리스트 가기</a>
 </body>
 </html>
